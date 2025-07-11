@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT                    
-pragma solidity ^0.8.0;                           
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 // 编写一个 Bank 合约，实现功能：
 // 可以通过 Metamask 等钱包直接给 Bank 合约地址存款
@@ -9,46 +9,44 @@ pragma solidity ^0.8.0;
 // 请提交完成项目代码或 github 仓库地址。
 
 contract Bank {
-        mapping (address => uint256)public balances;
-        address public owner;
-        address[3] public topUsers;
-        uint[3] public topAmounts;
+    mapping(address => uint256) public balances;
+    address public owner;
+    address[3] public topUsers;
 
-    constructor(){
+    constructor() {
         owner = msg.sender;
-        }
+    }
 
-    receive() external  payable {
-        balances[msg.sender] +=msg.value;
+    receive() external payable {
+        balances[msg.sender] += msg.value;
         updateTopUsers(msg.sender);
     }
 
-    function withdraw() public  {
-        require(msg.sender == owner,"not the owner"); //提示不是管理员
+    function withdraw() public {
+        require(msg.sender == owner, "not the owner"); //提示不是管理员
         payable(owner).transfer(address(this).balance);
     }
 
     function updateTopUsers(address user) internal {
-    uint256 amount = balances[user];
-
-    for (uint i = 0; i < 3; i++) {
-        if (topUsers[i] == user) {
-            topAmounts[i] = amount;
-            return;
-        }
-    }
-
-    for (uint i = 0; i < 3; i++) {
-        if (amount > topAmounts[i]) {
-            for (uint j = 2; j > i; j--) {
-                topUsers[j] = topUsers[j - 1];
-                topAmounts[j] = topAmounts[j - 1];
+        uint256 amount = balances[user];
+        // 检查是否已在排行榜中
+        for (uint i = 0; i < 3; i++) {
+            if (topUsers[i] == user) {
+                // 已在排行榜中，后面统一排序
+                break;
             }
-            topUsers[i] = user;
-            topAmounts[i] = amount;
-            break;
+        }
+        // 检查是否能进入前3
+        for (uint i = 0; i < 3; i++) {
+            if (topUsers[i] == address(0) || amount > balances[topUsers[i]]) {
+                // 插入新用户，后移
+                for (uint j = 2; j > i; j--) {
+                    topUsers[j] = topUsers[j - 1];
+                }
+                topUsers[i] = user;
+                break;
+            }
         }
     }
 }
 
-}
