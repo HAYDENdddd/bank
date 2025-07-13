@@ -83,7 +83,7 @@ contract Bank {
         //用户提钱
         uint256 amount = balances[msg.sender];
         require(amount > 0, "Balance not enough");
-        balances[msg.sender] = 0; // 先清零防止重入攻击
+        balances[msg.sender] = 0; 
         (bool success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Transfer failed");
     }
