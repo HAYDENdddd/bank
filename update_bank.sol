@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 contract Bank {
     mapping(address => uint256) public balances;
-    address private owner;
-    address[3] internal  topUsers;
+    address public owner;
+    address[3] public  topUsers;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
